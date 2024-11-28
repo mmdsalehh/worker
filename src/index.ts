@@ -11,7 +11,7 @@ export default {
         case `/sub/${userID}`:
           return await getNormalConfigs(request, env);
         default:
-          return new Response("Not Found", { status: 404 });
+          return env.ASSETS.fetch(request);
       }
     } catch (err) {
       return new Response("error", { status: 500 });
