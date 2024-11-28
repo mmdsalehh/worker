@@ -11,5 +11,6 @@ esbuild
     target: ["es2021"],
     minify: true,
     logLevel: "info",
+    external: ["cloudflare:sockets"],
   })
   .catch(() => process.exit(1));
