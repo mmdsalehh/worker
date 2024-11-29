@@ -16,9 +16,9 @@ export default {
             return env.ASSETS.fetch(request);
         }
       } else {
-        if (!pathName.startsWith("/tr")) {
+        if (pathName.startsWith("/vls"))
           return await vlessOverWSHandler(request, env);
-        }
+
         return new Response(null, { status: 404 });
       }
     } catch (err) {

@@ -64,7 +64,7 @@ export async function getNormalConfigs(request: Request, env: Env) {
       if (vlessConfigs) {
         vlessConfs += `${atob(
           "dmxlc3M6Ly8="
-        )}${userID}@${addr}:${port}?path=/${path}&encryption=none&host=${host}&type=ws${tlsFields}#${vlessRemark}\n`;
+        )}${userID}@${addr}:${port}?path=/vls${path}&encryption=none&host=${host}&type=ws${tlsFields}#${vlessRemark}\n`;
       }
 
       if (trojanConfigs) {

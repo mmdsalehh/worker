@@ -30,5 +30,5 @@ export default async function vlessRemoteSocketToWS(
     )
     .catch(() => safeCloseWebSocket(webSocket));
 
-  if (hasIncomingData === false && retry) retry();
+  if (!hasIncomingData && retry) retry();
 }
