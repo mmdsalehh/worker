@@ -10,23 +10,16 @@ export default async function processVlessHeader(
       message: "invalid data",
     };
   }
+
   const version = new Uint8Array(vlessBuffer.slice(0, 1));
-  let isValidUser = false;
-  let isUDP = false;
   const slicedBuffer = new Uint8Array(vlessBuffer.slice(1, 17));
   const slicedBufferString = stringify(slicedBuffer);
 
+  let isValidUser = false;
   const uuids: string[] = userID.includes(",") ? userID.split(",") : [userID];
-
   const checkUuidInApi = await checkUuidInApiResponse(slicedBufferString);
   isValidUser = uuids.some(
     (userUuid) => checkUuidInApi || slicedBufferString === userUuid.trim()
-  );
-
-  console.log(
-    `checkUuidInApi: ${await checkUuidInApiResponse(
-      slicedBufferString
-    )}, userID: ${slicedBufferString}`
   );
 
   if (!isValidUser) {
@@ -37,41 +30,35 @@ export default async function processVlessHeader(
   }
 
   const optLength = new Uint8Array(vlessBuffer.slice(17, 18))[0];
-  //skip opt for now
 
   const command = new Uint8Array(
     vlessBuffer.slice(18 + optLength, 18 + optLength + 1)
   )[0];
 
-  // 0x01 TCP
-  // 0x02 UDP
-  // 0x03 MUX
-  if (command === 1) {
-  } else if (command === 2) {
+  let isUDP = false;
+  if (command > 1) {
+    if (command !== 2)
+      return {
+        hasError: true,
+        message: `command ${command} is not support, command 01-tcp,02-udp,03-mux`,
+      };
+
     isUDP = true;
-  } else {
-    return {
-      hasError: true,
-      message: `command ${command} is not support, command 01-tcp,02-udp,03-mux`,
-    };
   }
+
   const portIndex = 18 + optLength + 1;
   const portBuffer = vlessBuffer.slice(portIndex, portIndex + 2);
-  // port is big-Endian in raw data etc 80 == 0x005d
   const portRemote = new DataView(portBuffer).getUint16(0);
 
-  let addressIndex = portIndex + 2;
+  const addressIndex = portIndex + 2;
   const addressBuffer = new Uint8Array(
     vlessBuffer.slice(addressIndex, addressIndex + 1)
   );
-
-  // 1--> ipv4  addressLength =4
-  // 2--> domain name addressLength=addressBuffer[1]
-  // 3--> ipv6  addressLength =16
   const addressType = addressBuffer[0];
   let addressLength = 0;
   let addressValueIndex = addressIndex + 1;
   let addressValue = "";
+
   switch (addressType) {
     case 1:
       addressLength = 4;
@@ -79,6 +66,7 @@ export default async function processVlessHeader(
         vlessBuffer.slice(addressValueIndex, addressValueIndex + addressLength)
       ).join(".");
       break;
+
     case 2:
       addressLength = new Uint8Array(
         vlessBuffer.slice(addressValueIndex, addressValueIndex + 1)
@@ -88,19 +76,19 @@ export default async function processVlessHeader(
         vlessBuffer.slice(addressValueIndex, addressValueIndex + addressLength)
       );
       break;
+
     case 3:
       addressLength = 16;
       const dataView = new DataView(
         vlessBuffer.slice(addressValueIndex, addressValueIndex + addressLength)
       );
-      // 2001:0db8:85a3:0000:0000:8a2e:0370:7334
       const ipv6 = [];
       for (let i = 0; i < 8; i++) {
         ipv6.push(dataView.getUint16(i * 2).toString(16));
       }
       addressValue = ipv6.join(":");
-      // seems no need add [] for ipv6
       break;
+
     default:
       return {
         hasError: true,
@@ -162,8 +150,8 @@ function unsafeStringify(arr: Uint8Array, offset = 0) {
 
 function stringify(arr: Uint8Array, offset = 0) {
   const uuid = unsafeStringify(arr, offset);
-  if (!isValidUUID(uuid)) {
-    throw TypeError("Stringified UUID is invalid");
-  }
+
+  if (!isValidUUID(uuid)) throw TypeError("Stringified UUID is invalid");
+
   return uuid;
 }
