@@ -33,6 +33,7 @@ export function makeReadableWebSocketStream(
         controller.enqueue(earlyData);
       }
     },
+    pull(controller) {},
     cancel() {
       if (readableStreamCancel) return;
 
