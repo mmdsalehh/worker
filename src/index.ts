@@ -5,6 +5,7 @@ import { vlessOverWSHandler } from "./protocols/vless/vlessOverWSHandler";
 export default {
   async fetch(request, env, ctx): Promise<Response> {
     const { pathName } = getParams(request);
+    console.log({ pathName });
 
     try {
       const upgradeHeader = request.headers.get("Upgrade");
