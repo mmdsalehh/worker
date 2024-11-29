@@ -21,22 +21,23 @@ export default async function handleTCPOutBound(
       /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
         address
       )
-    )
+    ) {
       address = `${atob("d3d3Lg==")}${address}${atob("LnNzbGlwLmlv")}`;
-    /** @type {import("@cloudflare/workers-types").Socket} */
-    const tcpSocket = connect({
+    }
+
+    const tcpSocket: Socket = connect({
       hostname: address,
       port: port,
     });
     remoteSocket.value = tcpSocket;
-    log(`connected to ${address}:${port}`);
+
     const writer = tcpSocket.writable.getWriter();
-    await writer.write(rawClientData); // first write, nomal is tls client hello
+    await writer.write(rawClientData);
     writer.releaseLock();
+
     return tcpSocket;
   }
 
-  // if the cf connect tcp socket have no incoming data, we retry to redirect ip
   async function retry() {
     const panelProxyIP = pathName.split("/")[2];
     const panelProxyIPs = panelProxyIP
@@ -45,22 +46,16 @@ export default async function handleTCPOutBound(
     const finalProxyIP = panelProxyIPs
       ? panelProxyIPs[Math.floor(Math.random() * panelProxyIPs.length)]
       : proxyIP || addressRemote;
+
     const tcpSocket = await connectAndWrite(finalProxyIP, portRemote);
-    // no matter retry success or not, close websocket
-    tcpSocket.closed
-      .catch((error) => {
-        console.log("retry tcpSocket closed error", error);
-      })
-      .finally(() => {
-        safeCloseWebSocket(webSocket);
-      });
+    tcpSocket.closed.finally(() => {
+      safeCloseWebSocket(webSocket);
+    });
 
     vlessRemoteSocketToWS(tcpSocket, webSocket, vlessResponseHeader, null, log);
   }
 
   const tcpSocket = await connectAndWrite(addressRemote, portRemote);
 
-  // when remoteSocket is ready, pass to websocket
-  // remote--> ws
   vlessRemoteSocketToWS(tcpSocket, webSocket, vlessResponseHeader, retry, log);
 }
