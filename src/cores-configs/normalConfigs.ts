@@ -1,15 +1,19 @@
-import { getParams } from "../helpers/init";
 import { proxySettings } from "../settings/proxy";
 import {
-  generateRemark,
-  getConfigAddresses,
+  userID,
+  getParams,
+  trojanPassword,
+  defaultHttpsPorts,
+} from "../helpers/init";
+import {
   getRandomPath,
+  generateRemark,
   randomUpperCase,
+  getConfigAddresses,
 } from "./helpers";
 
 export async function getNormalConfigs(request: Request, env: Env) {
-  const { hostName, client, trojanPassword, defaultHttpsPorts, userID } =
-    getParams(request);
+  const { hostName, client } = getParams(request);
 
   const {
     cleanIPs,
@@ -24,11 +28,6 @@ export async function getNormalConfigs(request: Request, env: Env) {
     enableIPv6,
   } = proxySettings;
 
-  let vlessConfs = "",
-    trojanConfs = "",
-    chainProxy = "";
-  let proxyIndex = 1;
-
   const Addresses = await getConfigAddresses(hostName, cleanIPs, enableIPv6);
   const customCdnAddresses = customCdnAddrs ? customCdnAddrs.split(",") : [];
   const totalAddresses = [...Addresses, ...customCdnAddresses];
@@ -38,6 +37,11 @@ export async function getNormalConfigs(request: Request, env: Env) {
     client === "singbox"
       ? "&eh=Sec-WebSocket-Protocol&ed=2560"
       : encodeURIComponent("?ed=2560");
+
+  let vlessConfs = "",
+    trojanConfs = "",
+    chainProxy = "";
+  let proxyIndex = 1;
 
   ports.forEach((port) => {
     totalAddresses.forEach((addr, index) => {
@@ -61,7 +65,7 @@ export async function getNormalConfigs(request: Request, env: Env) {
       if (vlessConfigs) {
         vlessConfs += `${atob(
           "dmxlc3M6Ly8="
-        )}${userID}@${addr}:${port}?path=/${path}&encryption=none&host=${host}&type=ws${tlsFields}#${vlessRemark}\n`;
+        )}${userID}@${addr}:${port}?path=/vl${path}&encryption=none&host=${host}&type=ws${tlsFields}#${vlessRemark}\n`;
       }
 
       if (trojanConfigs) {

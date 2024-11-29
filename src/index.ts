@@ -1,10 +1,10 @@
-import { getParams } from "./helpers/init";
+import { getParams, userID } from "./helpers/init";
+import { vlessOverWSHandler } from "./protocols/vless/vless";
 import { getNormalConfigs } from "./cores-configs/normalConfigs";
-import { vlessOverWSHandler } from "./protocols/vless";
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
-    const { pathName, userID } = getParams(request);
+    const { pathName } = getParams(request);
 
     try {
       const upgradeHeader = request.headers.get("Upgrade");
@@ -16,7 +16,7 @@ export default {
             return env.ASSETS.fetch(request);
         }
       } else {
-        if (!pathName.startsWith("/tr")) {
+        if (pathName.startsWith("/vl")) {
           return await vlessOverWSHandler(request, env);
         }
         return new Response(null, { status: 404 });
