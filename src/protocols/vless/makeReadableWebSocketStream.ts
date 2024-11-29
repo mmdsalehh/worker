@@ -23,9 +23,9 @@ export function makeReadableWebSocketStream(
         controller.close();
       });
       webSocketServer.addEventListener("error", (err) => {
+        console.log("webSocketServer has error");
         controller.error(err);
       });
-
       const { earlyData, error } = base64ToArrayBuffer(earlyDataHeader);
       if (error) {
         controller.error(error);
@@ -34,9 +34,11 @@ export function makeReadableWebSocketStream(
       }
     },
     pull(controller) {},
-    cancel() {
-      if (readableStreamCancel) return;
-
+    cancel(reason) {
+      if (readableStreamCancel) {
+        return;
+      }
+      console.log(`ReadableStream was canceled, due to ${reason}`);
       readableStreamCancel = true;
       safeCloseWebSocket(webSocketServer);
     },
