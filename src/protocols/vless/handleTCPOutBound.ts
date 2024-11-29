@@ -42,9 +42,11 @@ export async function handleTCPOutBound(
       ? panelProxyIPs[Math.floor(Math.random() * panelProxyIPs.length)]
       : proxyIP || addressRemote;
     const tcpSocket = await connectAndWrite(finalProxyIP, portRemote);
-    tcpSocket.closed.finally(() => {
-      safeCloseWebSocket(webSocket);
-    });
+    tcpSocket.closed
+      .catch(() => {})
+      .finally(() => {
+        safeCloseWebSocket(webSocket);
+      });
 
     vlessRemoteSocketToWS(tcpSocket, webSocket, vlessResponseHeader, null);
   }

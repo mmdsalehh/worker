@@ -1,6 +1,6 @@
 import { getParams, userID } from "./helpers/init";
-import { vlessOverWSHandler } from "./protocols/vless/vless";
 import { getNormalConfigs } from "./cores-configs/normalConfigs";
+import { vlessOverWSHandler } from "./protocols/vless/vlessOverWSHandler";
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
