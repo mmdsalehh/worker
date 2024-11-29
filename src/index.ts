@@ -1,10 +1,10 @@
-import { getParams } from "./helpers/init";
+import getParams, { userID } from "./helpers/init";
 import { getNormalConfigs } from "./cores-configs/normalConfigs";
-import { vlessOverWSHandler } from "./protocols/vless";
+import { vlessOverWSHandler } from "./protocols/vless/vlessOverWSHandler";
 
 export default {
   async fetch(request, env, ctx): Promise<Response> {
-    const { pathName, userID } = getParams(request);
+    const { pathName } = getParams(request);
 
     try {
       const upgradeHeader = request.headers.get("Upgrade");

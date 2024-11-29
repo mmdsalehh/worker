@@ -1,5 +1,9 @@
-import { getParams } from "../helpers/init";
 import { proxySettings } from "../settings/proxy";
+import getParams, {
+  trojanPassword,
+  defaultHttpsPorts,
+  userID,
+} from "../helpers/init";
 import {
   generateRemark,
   getConfigAddresses,
@@ -8,8 +12,7 @@ import {
 } from "./helpers";
 
 export async function getNormalConfigs(request: Request, env: Env) {
-  const { hostName, client, trojanPassword, defaultHttpsPorts, userID } =
-    getParams(request);
+  const { hostName, client } = getParams(request);
 
   const {
     cleanIPs,

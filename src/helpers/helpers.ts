@@ -1,7 +1,8 @@
+import { dohURL } from "./init";
+
 type Dns = { Answer: { data: string }[] };
 
 export async function resolveDNS(domain: string) {
-  const dohURL = "https://cloudflare-dns.com/dns-query";
   const dohURLv4 = `${dohURL}?name=${encodeURIComponent(domain)}&type=A`;
   const dohURLv6 = `${dohURL}?name=${encodeURIComponent(domain)}&type=AAAA`;
 
