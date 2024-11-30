@@ -3,8 +3,7 @@ import { WS_READY_STATE_OPEN } from "./constants";
 
 export default async function handleUDPOutBound(
   webSocket: WebSocket,
-  vlessResponseHeader: ArrayBuffer,
-  log: (info: string, event?: string) => void
+  vlessResponseHeader: ArrayBuffer
 ) {
   let isVlessHeaderSent = false;
   const transformStream = new TransformStream({
@@ -38,7 +37,6 @@ export default async function handleUDPOutBound(
           udpSize & 0xff,
         ]);
         if (webSocket.readyState === WS_READY_STATE_OPEN) {
-          log(`doh success and dns message length is ${udpSize}`);
           if (isVlessHeaderSent) {
             webSocket.send(
               await new Blob([udpSizeBuffer, dnsQueryResult]).arrayBuffer()

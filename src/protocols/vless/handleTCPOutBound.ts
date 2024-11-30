@@ -11,8 +11,7 @@ export default async function handleTCPOutBound(
   portRemote: number,
   rawClientData: Uint8Array,
   webSocket: WebSocket,
-  vlessResponseHeader: Uint8Array,
-  log: (info: string, event?: string) => void
+  vlessResponseHeader: Uint8Array
 ) {
   const { pathName } = getParams(request);
 
@@ -52,10 +51,10 @@ export default async function handleTCPOutBound(
       safeCloseWebSocket(webSocket);
     });
 
-    vlessRemoteSocketToWS(tcpSocket, webSocket, vlessResponseHeader, null, log);
+    vlessRemoteSocketToWS(tcpSocket, webSocket, vlessResponseHeader, null);
   }
 
   const tcpSocket = await connectAndWrite(addressRemote, portRemote);
 
-  vlessRemoteSocketToWS(tcpSocket, webSocket, vlessResponseHeader, retry, log);
+  vlessRemoteSocketToWS(tcpSocket, webSocket, vlessResponseHeader, retry);
 }

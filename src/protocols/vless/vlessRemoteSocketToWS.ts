@@ -5,8 +5,7 @@ export default async function vlessRemoteSocketToWS(
   remoteSocket: Socket,
   webSocket: WebSocket,
   vlessResponseHeader: ArrayBuffer | null,
-  retry: (() => Promise<void>) | null,
-  log: (info: string, event?: string) => void
+  retry: (() => Promise<void>) | null
 ) {
   let vlessHeader = vlessResponseHeader;
   let hasIncomingData = false;

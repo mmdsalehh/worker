@@ -8,7 +8,5 @@ export default function safeCloseWebSocket(socket: WebSocket) {
     ) {
       socket.close();
     }
-  } catch (error) {
-    console.error("safeCloseWebSocket error", error);
-  }
+  } catch {}
 }

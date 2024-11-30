@@ -7,20 +7,13 @@ import makeReadableWebSocketStream from "./makeReadableWebSocketStream";
 export async function vlessOverWSHandler(request: Request, env: Env) {
   const webSocketPair = new WebSocketPair();
   const [client, webSocket] = Object.values(webSocketPair);
-
   webSocket.accept();
 
-  let address = "";
-  let portWithRandomLog = "";
-  const log = (info: string, event?: string) => {
-    console.log(`[${address}:${portWithRandomLog}] ${info}`, event || "");
-  };
   const earlyDataHeader = request.headers.get("sec-websocket-protocol") || "";
 
   const readableWebSocketStream = makeReadableWebSocketStream(
     webSocket,
-    earlyDataHeader,
-    log
+    earlyDataHeader
   );
 
   let remoteSocketWapper: { value: Socket | null } = {
@@ -52,10 +45,6 @@ export async function vlessOverWSHandler(request: Request, env: Env) {
           addressRemote = "",
           vlessVersion = new Uint8Array([0, 0]),
         } = await processVlessHeader(chunk, userID);
-        address = addressRemote;
-        portWithRandomLog = `${portRemote}--${Math.random()} ${
-          isUDP ? "udp " : "tcp "
-        } `;
 
         if (hasError) throw new Error(message);
 
@@ -71,8 +60,7 @@ export async function vlessOverWSHandler(request: Request, env: Env) {
         if (isDns) {
           const { write } = await handleUDPOutBound(
             webSocket,
-            vlessResponseHeader,
-            log
+            vlessResponseHeader
           );
           udpStreamWrite = write;
           udpStreamWrite(rawClientData);
@@ -86,8 +74,7 @@ export async function vlessOverWSHandler(request: Request, env: Env) {
           portRemote,
           rawClientData,
           webSocket,
-          vlessResponseHeader,
-          log
+          vlessResponseHeader
         );
       },
     })

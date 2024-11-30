@@ -3,8 +3,7 @@ import base64ToArrayBuffer from "./base64ToArrayBuffer";
 
 export default function makeReadableWebSocketStream(
   webSocketServer: WebSocket,
-  earlyDataHeader: string,
-  log: (info: string, event?: string) => void
+  earlyDataHeader: string
 ) {
   let readableStreamCancel = false;
   const stream = new ReadableStream({
@@ -24,7 +23,6 @@ export default function makeReadableWebSocketStream(
       });
 
       webSocketServer.addEventListener("error", (err) => {
-        log("webSocketServer has error");
         controller.error(err);
       });
 
@@ -35,9 +33,8 @@ export default function makeReadableWebSocketStream(
         controller.enqueue(earlyData);
       }
     },
-    cancel(reason) {
+    cancel() {
       if (readableStreamCancel) return;
-      log(`ReadableStream was canceled, due to ${reason}`);
       readableStreamCancel = true;
       safeCloseWebSocket(webSocketServer);
     },

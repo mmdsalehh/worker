@@ -24,7 +24,6 @@ export async function resolveDNS(domain: string) {
 
     return { ipv4, ipv6 };
   } catch (error) {
-    console.error("Error resolving DNS:", error);
     throw new Error(`An error occurred while resolving DNS - ${error}`);
   }
 }
