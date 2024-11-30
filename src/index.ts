@@ -13,14 +13,18 @@ export default {
           case `/sub/${userID}`:
             return await getNormalConfigs(request, env);
           default:
-            return env.ASSETS.fetch(request);
+            const url = new URL(request.url);
+            url.hostname = "www.speedtest.net";
+            url.protocol = "https:";
+            request = new Request(url, request);
+            return await fetch(request);
         }
-      } else {
-        if (pathName.startsWith("/vls"))
-          return await vlessOverWSHandler(request, env);
-
-        return new Response(null, { status: 404 });
       }
+
+      if (pathName.startsWith("/vls"))
+        return await vlessOverWSHandler(request, env);
+
+      return new Response(null, { status: 404 });
     } catch (err) {
       return new Response("error", { status: 500 });
     }
