@@ -7,6 +7,8 @@ export default async function handleUDPOutBound(
 ) {
   let isVlessHeaderSent = false;
   const transformStream = new TransformStream({
+    start(controller) {},
+    flush(controller) {},
     transform(chunk, controller) {
       for (let index = 0; index < chunk.byteLength; ) {
         const lengthBuffer = chunk.slice(index, index + 2);
@@ -20,41 +22,43 @@ export default async function handleUDPOutBound(
     },
   });
 
-  transformStream.readable.pipeTo(
-    new WritableStream({
-      async write(chunk) {
-        const resp = await fetch(dohURL, {
-          method: "POST",
-          headers: {
-            "content-type": "application/dns-message",
-          },
-          body: chunk,
-        });
-        const dnsQueryResult = await resp.arrayBuffer();
-        const udpSize = dnsQueryResult.byteLength;
-        const udpSizeBuffer = new Uint8Array([
-          (udpSize >> 8) & 0xff,
-          udpSize & 0xff,
-        ]);
-        if (webSocket.readyState === WS_READY_STATE_OPEN) {
-          if (isVlessHeaderSent) {
-            webSocket.send(
-              await new Blob([udpSizeBuffer, dnsQueryResult]).arrayBuffer()
-            );
-          } else {
-            webSocket.send(
-              await new Blob([
-                vlessResponseHeader,
-                udpSizeBuffer,
-                dnsQueryResult,
-              ]).arrayBuffer()
-            );
-            isVlessHeaderSent = true;
+  transformStream.readable
+    .pipeTo(
+      new WritableStream({
+        async write(chunk) {
+          const resp = await fetch(dohURL, {
+            method: "POST",
+            headers: {
+              "content-type": "application/dns-message",
+            },
+            body: chunk,
+          });
+          const dnsQueryResult = await resp.arrayBuffer();
+          const udpSize = dnsQueryResult.byteLength;
+          const udpSizeBuffer = new Uint8Array([
+            (udpSize >> 8) & 0xff,
+            udpSize & 0xff,
+          ]);
+          if (webSocket.readyState === WS_READY_STATE_OPEN) {
+            if (isVlessHeaderSent) {
+              webSocket.send(
+                await new Blob([udpSizeBuffer, dnsQueryResult]).arrayBuffer()
+              );
+            } else {
+              webSocket.send(
+                await new Blob([
+                  vlessResponseHeader,
+                  udpSizeBuffer,
+                  dnsQueryResult,
+                ]).arrayBuffer()
+              );
+              isVlessHeaderSent = true;
+            }
           }
-        }
-      },
-    })
-  );
+        },
+      })
+    )
+    .catch(() => {});
 
   const writer = transformStream.writable.getWriter();
 
