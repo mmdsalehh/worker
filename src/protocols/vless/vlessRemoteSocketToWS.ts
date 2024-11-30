@@ -13,6 +13,9 @@ export default async function vlessRemoteSocketToWS(
   await remoteSocket.readable
     .pipeTo(
       new WritableStream({
+        start() {},
+        close() {},
+        abort() {},
         async write(chunk: Uint8Array, controller) {
           hasIncomingData = true;
           if (webSocket.readyState !== WS_READY_STATE_OPEN) {
