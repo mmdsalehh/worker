@@ -62,11 +62,15 @@ export async function getNormalConfigs(request: Request) {
         : "&security=none";
 
       if (vlessConfigs) {
-        vlessConfs += `vless://${userID}@${addr}:${port}?path=/vls${path}&encryption=none&host=${host}&type=ws${tlsFields}#${vlessRemark}\n`;
+        vlessConfs += `${atob(
+          "dmxlc3M6Ly8="
+        )}${userID}@${addr}:${port}?path=/vls${path}&encryption=none&host=${host}&type=ws${tlsFields}#${vlessRemark}\n`;
       }
 
       if (trojanConfigs) {
-        trojanConfs += `trojan://${trojanPass}@${addr}:${port}?path=/tr${path}&host=${host}&type=ws${tlsFields}#${trojanRemark}\n`;
+        trojanConfs += `${atob(
+          "dHJvamFuOi8v"
+        )}${trojanPass}@${addr}:${port}?path=/tr${path}&host=${host}&type=ws${tlsFields}#${trojanRemark}\n`;
       }
 
       proxyIndex++;

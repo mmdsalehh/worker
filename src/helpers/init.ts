@@ -15,7 +15,7 @@ export default function getParams(request: Request) {
 }
 
 export const panelVersion = "1";
-export const proxyIP = "bpb.yousef.isegaro.com";
+export const proxyIP = atob("YnBiLnlvdXNlZi5pc2VnYXJvLmNvbQ==");
 export const trojanPassword = "trojanPassword";
 export const dohURL = "https://cloudflare-dns.com/dns-query";
 export const userID = "2fb55e67-f61d-45a1-9619-a9cac3529382";
