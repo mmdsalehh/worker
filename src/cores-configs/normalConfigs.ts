@@ -11,7 +11,7 @@ import {
   randomUpperCase,
 } from "./helpers";
 
-export async function getNormalConfigs(request: Request, env: Env) {
+export async function getNormalConfigs(request: Request) {
   const { hostName, client } = getParams(request);
 
   const {
@@ -62,15 +62,11 @@ export async function getNormalConfigs(request: Request, env: Env) {
         : "&security=none";
 
       if (vlessConfigs) {
-        vlessConfs += `${atob(
-          "dmxlc3M6Ly8="
-        )}${userID}@${addr}:${port}?path=/vls${path}&encryption=none&host=${host}&type=ws${tlsFields}#${vlessRemark}\n`;
+        vlessConfs += `vless://${userID}@${addr}:${port}?path=/vls${path}&encryption=none&host=${host}&type=ws${tlsFields}#${vlessRemark}\n`;
       }
 
       if (trojanConfigs) {
-        trojanConfs += `${atob(
-          "dHJvamFuOi8v"
-        )}${trojanPass}@${addr}:${port}?path=/tr${path}&host=${host}&type=ws${tlsFields}#${trojanRemark}\n`;
+        trojanConfs += `trojan://${trojanPass}@${addr}:${port}?path=/tr${path}&host=${host}&type=ws${tlsFields}#${trojanRemark}\n`;
       }
 
       proxyIndex++;
@@ -78,7 +74,7 @@ export async function getNormalConfigs(request: Request, env: Env) {
   });
 
   if (outProxy) {
-    let chainRemark = `#${encodeURIComponent("💦 Chain proxy 🔗")}`;
+    const chainRemark = `#${encodeURIComponent("💦 Chain proxy 🔗")}`;
     if (outProxy.startsWith("socks") || outProxy.startsWith("http")) {
       const regex = /^(?:socks|http):\/\/([^@]+)@/;
       const isUserPass = outProxy.match(regex);

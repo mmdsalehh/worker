@@ -34,18 +34,17 @@ export function generateRemark(
   protocol: string,
   configType: string
 ) {
-  let addressType;
-  const type = configType ? ` ${configType}` : "";
+  let addressType = isDomain(address)
+    ? "Domain"
+    : isIPv4(address)
+    ? "IPv4"
+    : isIPv6(address)
+    ? "IPv6"
+    : "";
 
-  cleanIPs.includes(address)
-    ? (addressType = "Clean IP")
-    : (addressType = isDomain(address)
-        ? "Domain"
-        : isIPv4(address)
-        ? "IPv4"
-        : isIPv6(address)
-        ? "IPv6"
-        : "");
+  if (cleanIPs.includes(address)) addressType = "Clean IP";
+
+  const type = configType ? ` ${configType}` : "";
 
   return `💦 ${index} - ${protocol}${type} - ${addressType} : ${port}`;
 }

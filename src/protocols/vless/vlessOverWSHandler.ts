@@ -4,7 +4,7 @@ import handleUDPOutBound from "./handleUDPOutBound";
 import processVlessHeader from "./processVlessHeader";
 import makeReadableWebSocketStream from "./makeReadableWebSocketStream";
 
-export async function vlessOverWSHandler(request: Request, env: Env) {
+export async function vlessOverWSHandler(request: Request) {
   const webSocketPair = new WebSocketPair();
   const [client, webSocket] = Object.values(webSocketPair);
   webSocket.accept();
@@ -16,7 +16,7 @@ export async function vlessOverWSHandler(request: Request, env: Env) {
     earlyDataHeader
   );
 
-  let remoteSocketWapper: { value: Socket | null } = {
+  const remoteSocketWapper: { value: Socket | null } = {
     value: null,
   };
 

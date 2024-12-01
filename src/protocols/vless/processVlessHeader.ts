@@ -17,7 +17,7 @@ export default async function processVlessHeader(
 
   let isValidUser = false;
   const uuids: string[] = userID.includes(",") ? userID.split(",") : [userID];
-  const checkUuidInApi = await checkUuidInApiResponse(slicedBufferString);
+  const checkUuidInApi = await checkUuidInApiResponse();
   isValidUser = uuids.some(
     (userUuid) => checkUuidInApi || slicedBufferString === userUuid.trim()
   );
@@ -77,7 +77,7 @@ export default async function processVlessHeader(
       );
       break;
 
-    case 3:
+    case 3: {
       addressLength = 16;
       const dataView = new DataView(
         vlessBuffer.slice(addressValueIndex, addressValueIndex + addressLength)
@@ -88,6 +88,7 @@ export default async function processVlessHeader(
       }
       addressValue = ipv6.join(":");
       break;
+    }
 
     default:
       return {
@@ -113,7 +114,7 @@ export default async function processVlessHeader(
   };
 }
 
-async function checkUuidInApiResponse(targetUuid: string) {
+async function checkUuidInApiResponse() {
   return false;
 }
 

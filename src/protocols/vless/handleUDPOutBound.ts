@@ -7,8 +7,6 @@ export default async function handleUDPOutBound(
 ) {
   let isVlessHeaderSent = false;
   const transformStream = new TransformStream({
-    start(controller) {},
-    flush(controller) {},
     transform(chunk, controller) {
       for (let index = 0; index < chunk.byteLength; ) {
         const lengthBuffer = chunk.slice(index, index + 2);

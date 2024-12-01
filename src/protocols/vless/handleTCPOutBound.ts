@@ -21,7 +21,7 @@ export default async function handleTCPOutBound(
         address
       )
     ) {
-      address = `${atob("d3d3Lg==")}${address}${atob("LnNzbGlwLmlv")}`;
+      address = `www.${address}.sslip.io`;
     }
 
     const tcpSocket: Socket = connect({

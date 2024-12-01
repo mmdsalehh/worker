@@ -29,7 +29,7 @@ export async function resolveDNS(domain: string) {
 }
 
 export function isDomain(address: string) {
-  const domainPattern = /^(?!\-)(?:[A-Za-z0-9\-]{1,63}\.)+[A-Za-z]{2,}$/;
+  const domainPattern = /^(?!-)(?:[A-Za-z0-9-]{1,63}\.)+[A-Za-z]{2,}$/;
   return domainPattern.test(address);
 }
 
